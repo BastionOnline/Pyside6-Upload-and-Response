@@ -1,0 +1,1 @@
+alert('Welcome! Drop a message to the lucky couple!')
