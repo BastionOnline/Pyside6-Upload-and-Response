@@ -1,0 +1,105 @@
+--add-data "index.html;." --add-data "assets;assets"
+
+// ONE big file, slower load
+pyinstaller --onefile --windowed --add-data "index.html;." --add-data "assets;assets" main.py
+
+// folder, faster
+pyinstaller --onedir --windowed --add-data "index.html;." --add-data "assets;assets" main.py
+
+pyinstaller --onedir --windowed main.py
+
+pyinstaller --onefile main.py 
+
+pyinstaller --onedir --windowed main.py --collect-all PySide6
+
+pyinstaller --onedir --windowed main.py --collect-submodules PySide6 --collect-data PySide6 --collect-binaries PySide6
+
+Create a spec path
+pyinstaller main.py --onedir --windowed --name MyApp --specpath .
+
+
+python -m pyinstaller --onedir --windowed main.py --collect-all PySide6
+
+
+update spec file and compile that
+hiddenimports=[
+    "PySide6.QtCore",
+    "PySide6.QtWidgets",
+    "PySide6.QtGui",
+    "PySide6.QtWebEngineWidgets",
+    "PySide6.QtWebChannel"
+]
+
+a = Analysis(
+    ['main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('index.html', '.'),      # index.html in root
+        ('assets/*', 'assets'),   # everything inside assets/
+    ],
+    ...
+)
+
+
+
+In your MyApp.spec
+
+Look for the EXE(...) call at the bottom. You’ll see something like:
+
+exe = EXE(
+    ...,
+    name='MyApp',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True,
+)
+
+
+And above that, there’s a COLLECT(...) line if you originally built with onedir.
+
+To force onedir build
+
+Make sure the bottom part of the spec ends with COLLECT, like this:
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='MyApp'
+)
+
+
+That tells PyInstaller:
+
+Put the exe in a folder with all dependencies (MyApp/dist/MyApp/).
+
+Much faster to build and run, and easier for debugging.
+
+
+
+
+To force onefile build
+
+Instead of COLLECT, it wraps with EXE directly. Example:
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='MyApp',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True,
+)

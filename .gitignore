@@ -1,2 +1,4 @@
 \myenv
+\build
+\dist
 *.code-workspace

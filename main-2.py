@@ -20,7 +20,9 @@ class Backend(QObject):
         # Send it back to JS
         # Using `runJavaScript` to call the JS download function
         # view.page().runJavaScript(f'triggerDownload("thank_you.txt", {repr(thank_you_text)})')
-        view.page().runJavaScript(f'setThankYouFile({repr(thank_you_text)})')
+        # view.page().runJavaScript(f'setThankYouFile({repr(thank_you_text)})')
+        view.page().profile().downloadRequested.connect(handle_download)
+
 
 
 # No need to import QWebEngineDownloadItem
