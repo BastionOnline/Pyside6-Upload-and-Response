@@ -8,26 +8,11 @@
 </head>
 <body>
     <h1>Upload Message Here!</h1>
-    <!-- Clicking that submits the form, which causes the page to reload (or do a default POST). -->
-    <!-- <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".txt" required>
-        <button type="submit">Upload</button>
-    </form> -->
-
-    <!-- <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="fileInput" accept=".txt" required>
-        <button type="button" onclick="sendFile()">Upload</button>
-    </form> -->
-
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" id="fileInput" accept=".txt" required>
         <button type="button" onclick="sendFile()">Upload</button>
     </form>
-
-    <!-- Download button is always present but initially disabled -->
-    <button id="downloadBtn" type="button" disabled onclick="triggerDownload()">Download Thank You File</button>
-
-
+    <!-- <button id="downloadBtn" type="button" onclick="downloadThankYou()">Download Thank You File</button> -->
 </body>
 <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script src="assets/script.js"></script>

@@ -1,5 +1,8 @@
+import tempfile
+import pathlib
+from PySide6.QtCore import QUrl
 import sys # exit app cleanly
-from PySide6.QtWidgets import QApplication, QFileDialog # QApplication → runs the GUI event loop
+from PySide6.QtWidgets import QApplication, QFileDialog, QPushButton, QVBoxLayout, QWidget # QApplication → runs the GUI event loop
 from PySide6.QtWebEngineWidgets import QWebEngineView # QWebEngineView → displays your HTML page
 
 # QObject, Slot → backend Python class that JS can call  
@@ -14,16 +17,20 @@ class Backend(QObject):
         print(f"Received file: {filename}")
         print("Content:", content)
 
-        # Generate "thank you" text
         thank_you_text = "Thank you for uploading your file!"
 
-        # Send it back to JS
-        # Using `runJavaScript` to call the JS download function
-        # view.page().runJavaScript(f'triggerDownload("thank_you.txt", {repr(thank_you_text)})')
-        # view.page().runJavaScript(f'setThankYouFile({repr(thank_you_text)})')
-        view.page().profile().downloadRequested.connect(handle_download)
+        # Write to a temporary file
+        temp_file = pathlib.Path(tempfile.gettempdir()) / "thank_you.txt"
+        temp_file.write_text(thank_you_text, encoding="utf-8")
 
-
+        # Trigger download in QWebEngineView
+        view.page().download(QUrl.fromLocalFile(str(temp_file)))
+    @Slot()
+    def downloadThankYouFile(self):
+        thank_you_text = "Thank you for uploading your file!"
+        temp_file = pathlib.Path(tempfile.gettempdir()) / "thank_you.txt"
+        temp_file.write_text(thank_you_text, encoding="utf-8")
+        view.page().download(QUrl.fromLocalFile(str(temp_file)))
 
 # No need to import QWebEngineDownloadItem
 def handle_download(download):
@@ -38,26 +45,12 @@ def handle_download(download):
         download.cancel()
 
 
-# # Optional: intercept downloads to allow user to choose location
-# def handle_download(download: QWebEngineDownloadItem):
-#     filename, _ = QFileDialog.getSaveFileName(
-#         None, "Save Thank You File", download.path(), "Text Files (*.txt)"
-#     )
-#     if filename:
-#         download.setPath(filename)
-#         download.accept()
-#     else:
-#         download.cancel()
 
+# Utility to locate HTML
 def resource_path(relative_path):
-    # checks if the script is running from a PyInstaller executable.
-    if getattr(sys, 'frozen', False):
-        # PyInstaller puts files in a temporary folder when frozen
-        # sys._MEIPASS → the temporary folder where PyInstaller extracts HTML, CSS, JS, etc.
+    if getattr(sys, "frozen", False):
         base_path = sys._MEIPASS
     else:
-        # Running normally in Python
-        # used when running normally, so it still works outside of an exe.
         base_path = os.path.dirname(__file__)
     return os.path.join(base_path, relative_path)
 
