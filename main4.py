@@ -10,6 +10,7 @@ from PySide6.QtWebChannel import QWebChannel # QWebChannel → bridge between JS
 import os # os → safely find files on disk
 
 class Backend(QObject):
+    # @Slot decorator is native to PySide and is used to expose Python methods to JS via the WebChannel.
     @Slot(str, str)
     def receiveFile(self, filename, content):
         print(f"Received file: {filename}")

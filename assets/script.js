@@ -13,6 +13,7 @@ function sendFile() {
     const reader = new FileReader();
     reader.onload = function() {
         const content = reader.result;
+        //  PySide automatically passes those values to your Python method receiveFile
         backend.receiveFile(file.name, content);
     };
     reader.readAsText(file);
